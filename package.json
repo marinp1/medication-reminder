@@ -40,6 +40,7 @@
   },
   "dependencies": {
     "@types/dotenv": "^6.1.0",
+    "axios": "^0.18.0",
     "camunda-worker-node": "^7.1.0",
     "dayjs": "^1.8.9",
     "express": "^4.16.4",

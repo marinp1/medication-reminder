@@ -4,7 +4,7 @@
     <bpmn:startEvent id="start-event" name="7 AM and 7 PM every day">
       <bpmn:outgoing>SequenceFlow_0bqz6th</bpmn:outgoing>
       <bpmn:timerEventDefinition>
-        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">R/2019-05-05T5:00:00Z/PT1M</bpmn:timeCycle>
+        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">R/2019-05-05T5:00:00Z/PT5M</bpmn:timeCycle>
       </bpmn:timerEventDefinition>
     </bpmn:startEvent>
     <bpmn:exclusiveGateway id="ExclusiveGateway_1oktg90" name="Response type">
@@ -68,7 +68,7 @@
     <bpmn:boundaryEvent id="response-timer" name="Wait at most 12 hours" attachedToRef="receive-response">
       <bpmn:outgoing>SequenceFlow_1y35fpz</bpmn:outgoing>
       <bpmn:timerEventDefinition>
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT12H</bpmn:timeDuration>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT5M</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
     <bpmn:sequenceFlow id="SequenceFlow_1y35fpz" sourceRef="response-timer" targetRef="handle-timeout" />
