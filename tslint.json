@@ -10,6 +10,7 @@
     "semicolon": [true, "always", "ignore-bound-class-methods"],
     "no-console": false,
     "object-literal-sort-keys": false,
+    "max-classes-per-file": false,
     "quotemark": false,
     "newspaper-order": true
   }

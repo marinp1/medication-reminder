@@ -19,7 +19,37 @@ declare module 'camunda-worker-node/lib/backoff' {
   export default IBackoff;
 }
 
+declare module 'camunda-worker-node/lib/engine/api' {
+  export class IEngineAPI {
+    bpmnError: (
+      taskId: string,
+      body: {
+        workerId: string;
+        errorCode: string;
+        errorMessage: string;
+      },
+    ) => void;
+    taskFailed: (
+      taskId: string,
+      body: {
+        workerId: string;
+        errorMessage: string;
+        retries: number;
+        retryTimeout: number;
+      },
+    ) => void;
+  }
+  function Api(
+    baseUrl: string,
+    defaultRequestOptions: any,
+    apiVersion: string,
+  ): IEngineAPI;
+  export default Api;
+}
+
 declare module 'camunda-worker-node/lib/worker' {
+  import { IEngineAPI } from 'camunda-worker-node/lib/engine/api';
+
   export enum STATE {
     STATE_NEW = 'NEW',
     STATE_RUNNING = 'RUNNING',
@@ -27,14 +57,26 @@ declare module 'camunda-worker-node/lib/worker' {
   }
 
   export interface IWorkSubscription {}
-  export interface ITask {}
+  export interface ITask {
+    id: string;
+    [key: string]: any;
+  }
 
   export class IWorker {
     subscriptions: IWorkSubscription[];
     state: STATE;
+    engineApi: IEngineAPI;
     start: () => any;
     addSubscription: (data: { topicName: string }) => IWorkSubscription;
     removeSubscription: (subscription: IWorkSubscription) => any;
+    error: (
+      msg: string,
+      err: {
+        workerId: string;
+        errorCode: string;
+        errorMessage: string;
+      },
+    ) => void;
     subscribe: (
       topicName: string,
       options: { [key: string]: any },

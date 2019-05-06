@@ -1,7 +1,6 @@
 import Worker from 'camunda-worker-node';
 import { IWorker } from 'camunda-worker-node/lib/worker';
 import Backoff from 'camunda-worker-node/lib/backoff';
-import { v4 as uuidv4 } from 'uuid';
 import { IMessageResponse, CamundaTask, STATUS } from './types';
 
 class Camunda {
@@ -24,6 +23,14 @@ class Camunda {
     },
   });
 
+  public static generateError = (
+    error: 'TelegramError' | 'DatabaseError',
+    errorMessage: string,
+  ) => ({
+    errorCode: error,
+    errorMessage,
+  });
+
   private engineWorker: IWorker;
 
   constructor() {
@@ -32,17 +39,15 @@ class Camunda {
       use: [Backoff],
     });
   }
-
   public init = () => {
     this.engineWorker.subscribe(
       CamundaTask.SendReminder,
       async (context: any) => {
         console.log(context);
-        return {
-          variables: {
-            telegramResponseId: uuidv4(),
-          },
-        };
+        return Camunda.generateError(
+          'TelegramError',
+          'Could not send reminder!',
+        );
       },
     );
     this.engineWorker.subscribe(
