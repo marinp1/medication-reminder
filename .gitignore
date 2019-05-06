@@ -1,0 +1,27 @@
+# package directories
+/*/node_modules
+/*/jspm_packages
+
+# Serverless directories
+/*/.serverless
+/*/.build
+/*/.webpack
+/*/local
+/*/.cache-loader
+
+.env
+.env.development
+.env.production
+
+yarn-error.log
+node_modules
+.serverless/
+.cache-loader/
+.webpack/
+.build/
+.dist/
+dist/
+local/
+.DS_Store
+src/index.js
+src/index.js.map

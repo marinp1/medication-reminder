@@ -1,0 +1,14 @@
+{
+  "extends": [
+    "tslint:recommended",
+    "tslint-clean-code",
+    "tslint-config-prettier"
+  ],
+  "rules": {
+    "trailing-comma": true,
+    "semicolon": [true, "always", "ignore-bound-class-methods"],
+    "no-console": false,
+    "quotemark": false,
+    "newspaper-order": true
+  }
+}
