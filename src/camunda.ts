@@ -95,7 +95,8 @@ class Camunda {
           const telegramResponseId = await TelegramBot.instance.remind();
           return {
             variables: {
-              startDateTime: getCurrentDate(),
+              startDateTime:
+                context.variables.startDateTime || getCurrentDate(),
               telegramResponseId,
             },
           };
