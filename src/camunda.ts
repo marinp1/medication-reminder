@@ -6,6 +6,42 @@ import { IMessageResponse, CamundaTask, STATUS } from './types';
 import TelegramBot from './telegram';
 import logger from './logger';
 
+// Override Worker completeTask to include errorMessage
+// I'm too lazy to fork the repo
+Worker.prototype.completeTask = async function(
+  task: any,
+  newContext: any = {},
+) {
+  const taskId = task.id;
+  const workerId = this.options.workerId;
+
+  const newVariables = newContext.variables || {};
+  const errorCode = newContext.errorCode;
+  const errorMessage = newContext.errorMessage;
+
+  if (errorCode) {
+    console.log(errorCode, errorMessage);
+    await this.engineApi.bpmnError(taskId, {
+      workerId,
+      errorCode,
+      variables: {
+        message: {
+          value: JSON.stringify(errorMessage),
+          type: 'String',
+        },
+      },
+    });
+  } else {
+    await this.engineApi.taskCompleted(taskId, {
+      workerId,
+      variables: this.engineApi.serializeVariables(
+        newVariables,
+        task.variables,
+      ),
+    });
+  }
+};
+
 const getCurrentDate = () => dayjs().format('YYYY-MM-DDTHH:mm:ss');
 
 class Camunda {

@@ -66,7 +66,8 @@ class TelegramBot {
       await this.bot.sendMessage(
         this.VALID_USER_ID,
         'Database error occured:\n' +
-          '```Process instance ID: ' +
+          '````' +
+          'Instance ID: ' +
           processInstanceId +
           '\n' +
           'Error message: ' +

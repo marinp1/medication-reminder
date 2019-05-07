@@ -114,12 +114,7 @@
     <bpmn:serviceTask id="save-response" name="Save response to DB" camunda:type="external" camunda:topic="save-response">
       <bpmn:incoming>SequenceFlow_1l3ogan</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0o5vleb</bpmn:outgoing>
-      <bpmn:property id="Property_028gd50" name="__targetRef_placeholder" />
-      <bpmn:dataInputAssociation id="DataInputAssociation_0yxeh5v">
-        <bpmn:sourceRef>DataStoreReference_0tx3x3b</bpmn:sourceRef>
-        <bpmn:targetRef>Property_028gd50</bpmn:targetRef>
-      </bpmn:dataInputAssociation>
-      <bpmn:dataOutputAssociation id="DataOutputAssociation_0spdrmb">
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_0bxnj64">
         <bpmn:targetRef>DataStoreReference_0tx3x3b</bpmn:targetRef>
       </bpmn:dataOutputAssociation>
     </bpmn:serviceTask>
@@ -188,14 +183,6 @@
         <bpmndi:BPMNLabel>
           <dc:Bounds x="581" y="154" width="64" height="13" />
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DataOutputAssociation_0spdrmb_di" bpmnElement="DataOutputAssociation_0spdrmb">
-        <di:waypoint x="720" y="216" />
-        <di:waypoint x="720" y="331" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="DataInputAssociation_0yxeh5v_di" bpmnElement="DataInputAssociation_0yxeh5v">
-        <di:waypoint x="720" y="331" />
-        <di:waypoint x="720" y="216" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="EndEvent_0crjde7_di" bpmnElement="end-success">
         <dc:Bounds x="855" y="158" width="36" height="36" />
@@ -434,6 +421,10 @@
         <bpmndi:BPMNLabel>
           <dc:Bounds x="588.5" y="650.5" width="0" height="13" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_0bxnj64_di" bpmnElement="DataOutputAssociation_0bxnj64">
+        <di:waypoint x="720" y="216" />
+        <di:waypoint x="720" y="331" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
