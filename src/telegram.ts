@@ -2,6 +2,7 @@ import TelegramService from 'node-telegram-bot-api';
 import CamundaService from './camunda';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
+import logger from './logger';
 
 import { STATUS } from './types';
 
@@ -26,32 +27,52 @@ class TelegramBot {
   public async remind() {
     try {
       const id = uuidv4();
-      await this.bot.sendMessage(this.VALID_USER_ID, 'Reminder: Take meds', {
-        reply_markup: {
-          force_reply: true,
-          inline_keyboard: [
-            [
-              {
-                text: 'Wait',
-                callback_data: JSON.stringify({ id, response: 'WAIT' }),
-              },
+      await this.bot.sendMessage(
+        this.VALID_USER_ID,
+        '*Reminder: Have you taken meds?*',
+        {
+          parse_mode: 'Markdown',
+          reply_markup: {
+            force_reply: true,
+            inline_keyboard: [
+              [
+                {
+                  text: 'Wait',
+                  callback_data: JSON.stringify({ id, response: 'WAIT' }),
+                },
+              ],
+              [
+                {
+                  text: 'Yes',
+                  callback_data: JSON.stringify({ id, response: 'YES' }),
+                },
+                {
+                  text: 'No',
+                  callback_data: JSON.stringify({ id, response: 'NO' }),
+                },
+              ],
             ],
-            [
-              {
-                text: 'Yes',
-                callback_data: JSON.stringify({ id, response: 'YES' }),
-              },
-              {
-                text: 'No',
-                callback_data: JSON.stringify({ id, response: 'NO' }),
-              },
-            ],
-          ],
+          },
         },
-      });
+      );
       return id;
     } catch (e) {
-      console.log(e);
+      throw e;
+    }
+  }
+
+  public async inform(context: string) {
+    try {
+      await this.bot.sendMessage(
+        this.VALID_USER_ID,
+        'Database error for following context:\n:```' +
+          JSON.stringify(context) +
+          '```',
+        {
+          parse_mode: 'Markdown',
+        },
+      );
+    } catch (e) {
       throw e;
     }
   }
@@ -115,7 +136,7 @@ class TelegramBot {
         }
       }
     });
-    console.log('Started to poll Telegram...');
+    logger.info('Started to poll Telegram...');
     this.bot.startPolling();
     this.Camunda.init();
   }
@@ -135,9 +156,6 @@ class TelegramBot {
       if (response.status !== 200 || !response.data || !response.data.length) {
         throw new Error('Could not reach Camunda!');
       }
-
-      const executionId = response.data[0].execution.id;
-      console.log(`Message sent successfully to ${executionId}`);
     } catch (e) {
       const message = e.response ? e.response.data.message : e.message;
       const statusCode = e.response ? e.response.status : 500;

@@ -4,19 +4,19 @@
     <bpmn:startEvent id="start-event" name="7 AM and 7 PM every day">
       <bpmn:outgoing>SequenceFlow_0bqz6th</bpmn:outgoing>
       <bpmn:timerEventDefinition>
-        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">R/2019-05-05T5:00:00Z/PT1M</bpmn:timeCycle>
+        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">R/2019-05-05T5:00:00Z/PT5M</bpmn:timeCycle>
       </bpmn:timerEventDefinition>
     </bpmn:startEvent>
     <bpmn:subProcess id="SubProcess_1407mjv" triggeredByEvent="true">
       <bpmn:endEvent id="EndEvent_02hs2h6">
         <bpmn:incoming>SequenceFlow_1bi2nz3</bpmn:incoming>
       </bpmn:endEvent>
-      <bpmn:sequenceFlow id="SequenceFlow_1bi2nz3" sourceRef="log-db-error" targetRef="EndEvent_02hs2h6" />
-      <bpmn:serviceTask id="log-db-error" name="Log error" camunda:type="external" camunda:topic="log-db-error">
+      <bpmn:sequenceFlow id="SequenceFlow_1bi2nz3" sourceRef="log-error-tg" targetRef="EndEvent_02hs2h6" />
+      <bpmn:serviceTask id="log-error-tg" name="Log error" camunda:type="external" camunda:topic="log-error">
         <bpmn:incoming>SequenceFlow_1a8e1ue</bpmn:incoming>
         <bpmn:outgoing>SequenceFlow_1bi2nz3</bpmn:outgoing>
       </bpmn:serviceTask>
-      <bpmn:sequenceFlow id="SequenceFlow_1a8e1ue" sourceRef="StartEvent_19utnsn" targetRef="log-db-error" />
+      <bpmn:sequenceFlow id="SequenceFlow_1a8e1ue" sourceRef="StartEvent_19utnsn" targetRef="log-error-tg" />
       <bpmn:startEvent id="StartEvent_19utnsn" name="Telegram error">
         <bpmn:outgoing>SequenceFlow_1a8e1ue</bpmn:outgoing>
         <bpmn:errorEventDefinition errorRef="Error_0laxfx9" camunda:errorCodeVariable="errorCode" />
@@ -27,12 +27,9 @@
         <bpmn:incoming>SequenceFlow_0fpbe2t</bpmn:incoming>
         <bpmn:errorEventDefinition errorRef="Error_0laxfx9" />
       </bpmn:endEvent>
-      <bpmn:endEvent id="EndEvent_080hikb">
-        <bpmn:incoming>SequenceFlow_0n93c7x</bpmn:incoming>
-      </bpmn:endEvent>
       <bpmn:sendTask id="inform-user" name="Inform user" camunda:type="external" camunda:topic="inform-user">
         <bpmn:incoming>SequenceFlow_1ilqvvo</bpmn:incoming>
-        <bpmn:outgoing>SequenceFlow_0n93c7x</bpmn:outgoing>
+        <bpmn:outgoing>SequenceFlow_0c9hgi0</bpmn:outgoing>
       </bpmn:sendTask>
       <bpmn:boundaryEvent id="BoundaryEvent_0oufp67" name="Catch TG error" attachedToRef="inform-user">
         <bpmn:outgoing>SequenceFlow_0fpbe2t</bpmn:outgoing>
@@ -44,7 +41,15 @@
       </bpmn:startEvent>
       <bpmn:sequenceFlow id="SequenceFlow_0fpbe2t" sourceRef="BoundaryEvent_0oufp67" targetRef="EndEvent_0zt9j4d" />
       <bpmn:sequenceFlow id="SequenceFlow_1ilqvvo" sourceRef="StartEvent_1571nes" targetRef="inform-user" />
-      <bpmn:sequenceFlow id="SequenceFlow_0n93c7x" sourceRef="inform-user" targetRef="EndEvent_080hikb" />
+      <bpmn:serviceTask id="log-error-db" name="Log error" camunda:type="external" camunda:topic="log-error">
+        <bpmn:incoming>SequenceFlow_0c9hgi0</bpmn:incoming>
+        <bpmn:outgoing>SequenceFlow_1v2brer</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="SequenceFlow_0c9hgi0" sourceRef="inform-user" targetRef="log-error-db" />
+      <bpmn:endEvent id="EndEvent_0t8ti4y">
+        <bpmn:incoming>SequenceFlow_1v2brer</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="SequenceFlow_1v2brer" sourceRef="log-error-db" targetRef="EndEvent_0t8ti4y" />
     </bpmn:subProcess>
     <bpmn:sequenceFlow id="SequenceFlow_0bqz6th" sourceRef="start-event" targetRef="send-reminder" />
     <bpmn:sequenceFlow id="SequenceFlow_0okqzvc" sourceRef="BoundaryEvent_0oo2oo1" targetRef="EndEvent_1bcjb8u" />
@@ -247,13 +252,13 @@
       <bpmndi:BPMNShape id="ServiceTask_1mbtpsl_di" bpmnElement="handle-timeout">
         <dc:Bounds x="398" y="316" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ServiceTask_0wrs4ty_di" bpmnElement="log-db-error">
-        <dc:Bounds x="654" y="563" width="100" height="80" />
+      <bpmndi:BPMNShape id="ServiceTask_0wrs4ty_di" bpmnElement="log-error-tg">
+        <dc:Bounds x="843" y="643" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_02hs2h6_di" bpmnElement="EndEvent_02hs2h6">
-        <dc:Bounds x="801" y="585" width="36" height="36" />
+        <dc:Bounds x="990" y="665" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1356" y="490" width="90" height="13" />
+          <dc:Bounds x="1545" y="570" width="90" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1t8ms92_di" bpmnElement="SequenceFlow_1t8ms92">
@@ -338,79 +343,66 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="SubProcess_15wc5hf_di" bpmnElement="SubProcess_1407mjv" isExpanded="true">
-        <dc:Bounds x="528" y="526" width="344" height="164" />
+        <dc:Bounds x="717" y="606" width="344" height="164" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1bi2nz3_di" bpmnElement="SequenceFlow_1bi2nz3">
-        <di:waypoint x="754" y="603" />
-        <di:waypoint x="801" y="603" />
+        <di:waypoint x="943" y="683" />
+        <di:waypoint x="990" y="683" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="777.5" y="581" width="0" height="13" />
+          <dc:Bounds x="922" y="661" width="90" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="StartEvent_15n2zsp_di" bpmnElement="StartEvent_19utnsn">
-        <dc:Bounds x="571" y="585" width="36" height="36" />
+        <dc:Bounds x="760" y="665" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="553" y="627" width="72" height="13" />
+          <dc:Bounds x="742" y="707" width="72" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1a8e1ue_di" bpmnElement="SequenceFlow_1a8e1ue">
-        <di:waypoint x="607" y="603" />
-        <di:waypoint x="654" y="603" />
+        <di:waypoint x="796" y="683" />
+        <di:waypoint x="843" y="683" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="630.5" y="581" width="0" height="13" />
+          <dc:Bounds x="775" y="661" width="90" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="SubProcess_19bkisn_di" bpmnElement="SubProcess_1cuswe2" isExpanded="true">
-        <dc:Bounds x="105" y="526" width="378" height="165" />
+        <dc:Bounds x="110" y="606" width="575" height="163" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="EndEvent_09shppy_di" bpmnElement="EndEvent_0zt9j4d">
-        <dc:Bounds x="416" y="633" width="36" height="36" />
+        <dc:Bounds x="421" y="713" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="434" y="671.75" width="0" height="13" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="EndEvent_080hikb_di" bpmnElement="EndEvent_080hikb">
-        <dc:Bounds x="416" y="574" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="971" y="479" width="90" height="13" />
+          <dc:Bounds x="394" y="752" width="90" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SendTask_0lwgq3i_di" bpmnElement="inform-user">
-        <dc:Bounds x="254" y="552" width="100" height="80" />
+        <dc:Bounds x="259" y="632" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BoundaryEvent_05jpfvp_di" bpmnElement="BoundaryEvent_0oufp67">
-        <dc:Bounds x="320" y="615" width="36" height="36" />
+        <dc:Bounds x="325" y="695" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="301" y="655" width="74" height="12" />
+          <dc:Bounds x="306" y="735" width="74" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="StartEvent_0kj44vw_di" bpmnElement="StartEvent_1571nes">
-        <dc:Bounds x="156" y="574" width="36" height="36" />
+        <dc:Bounds x="161" y="654" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="137" y="616" width="74" height="12" />
+          <dc:Bounds x="142" y="696" width="74" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0fpbe2t_di" bpmnElement="SequenceFlow_0fpbe2t">
-        <di:waypoint x="356" y="633" />
-        <di:waypoint x="386" y="633" />
-        <di:waypoint x="386" y="651" />
-        <di:waypoint x="416" y="651" />
+        <di:waypoint x="361" y="713" />
+        <di:waypoint x="391" y="713" />
+        <di:waypoint x="391" y="731" />
+        <di:waypoint x="421" y="731" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="401" y="635.5" width="0" height="13" />
+          <dc:Bounds x="361" y="716" width="90" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1ilqvvo_di" bpmnElement="SequenceFlow_1ilqvvo">
-        <di:waypoint x="192" y="592" />
-        <di:waypoint x="254" y="592" />
+        <di:waypoint x="197" y="672" />
+        <di:waypoint x="259" y="672" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="760" y="437" width="90" height="13" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_0n93c7x_di" bpmnElement="SequenceFlow_0n93c7x">
-        <di:waypoint x="354" y="592" />
-        <di:waypoint x="416" y="592" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="922" y="436" width="90" height="13" />
+          <dc:Bounds x="765" y="517" width="90" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_0bqz6th_di" bpmnElement="SequenceFlow_0bqz6th">
@@ -418,6 +410,29 @@
         <di:waypoint x="187" y="176" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="111" y="155" width="90" height="13" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_1cqvil5_di" bpmnElement="log-error-db">
+        <dc:Bounds x="467" y="632" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0c9hgi0_di" bpmnElement="SequenceFlow_0c9hgi0">
+        <di:waypoint x="359" y="672" />
+        <di:waypoint x="467" y="672" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="413" y="650.5" width="0" height="13" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_0t8ti4y_di" bpmnElement="EndEvent_0t8ti4y">
+        <dc:Bounds x="610" y="654" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="628" y="693" width="0" height="13" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1v2brer_di" bpmnElement="SequenceFlow_1v2brer">
+        <di:waypoint x="567" y="672" />
+        <di:waypoint x="610" y="672" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="588.5" y="650.5" width="0" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

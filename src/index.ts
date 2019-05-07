@@ -4,6 +4,7 @@ dotenv.config();
 import express from 'express';
 import { Request, Response } from 'express';
 import TelegramBot from './telegram';
+import logger from './logger';
 
 const app = express();
 
@@ -16,7 +17,7 @@ app.get('/', (req: Request, res: Response) => {
 if (require.main === module) {
   // true if file is executed
   app.listen(PORT, () => {
-    console.log('server started at http://localhost:' + PORT);
+    logger.info('server started at http://localhost:' + PORT);
   });
 }
 

@@ -6,6 +6,7 @@ export enum CamundaTask {
   HandleTimeout = 'handle-timeout',
   SaveResponse = 'save-response',
   InformUser = 'inform-user',
+  LogError = 'log-error',
 }
 
 export interface IMessageResponse {
