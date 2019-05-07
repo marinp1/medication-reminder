@@ -3,6 +3,8 @@ import { IWorker } from 'camunda-worker-node/lib/worker';
 import Backoff from 'camunda-worker-node/lib/backoff';
 import { IMessageResponse, CamundaTask, STATUS } from './types';
 
+import TelegramBot from './telegram';
+
 class Camunda {
   public static readonly engineEndpoint = 'http://localhost:8080/engine-rest';
 
@@ -39,21 +41,29 @@ class Camunda {
       use: [Backoff],
     });
   }
+
   public init = () => {
     this.engineWorker.subscribe(
       CamundaTask.SendReminder,
       async (context: any) => {
-        console.log(context);
-        return Camunda.generateError(
-          'TelegramError',
-          'Could not send reminder!',
-        );
+        console.log(`Task: ${CamundaTask.SendReminder} for id ${context.id}`);
+        try {
+          const telegramResponseId = await TelegramBot.instance.remind();
+          return {
+            variables: {
+              telegramResponseId,
+            },
+          };
+        } catch (e) {
+          return Camunda.generateError('TelegramError', e.message);
+        }
       },
     );
+
     this.engineWorker.subscribe(
       CamundaTask.HandleTimeout,
       async (context: any) => {
-        console.log(context);
+        console.log(`Task: ${CamundaTask.HandleTimeout} for id ${context.id}`);
         return {
           variables: {
             hello: false,
@@ -61,6 +71,8 @@ class Camunda {
         };
       },
     );
+
+    console.log('Started Camunda workers...');
   };
 }
 
