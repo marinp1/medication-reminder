@@ -6,6 +6,8 @@ import { IMessageResponse, CamundaTask, STATUS } from './types';
 import TelegramBot from './telegram';
 import logger from './logger';
 
+const getCurrentDate = () => dayjs().format('YYYY-MM-DDTHH:mm:ss');
+
 class Camunda {
   public static readonly engineEndpoint = 'http://localhost:8080/engine-rest';
 
@@ -48,9 +50,9 @@ class Camunda {
       CamundaTask.SendReminder,
       async (context: any) => {
         logger.info(
-          `Performing task: ${CamundaTask.SendReminder} for id ${
-            context.processInstanceId
-          }`,
+          `${getCurrentDate()} Performing task: ${
+            CamundaTask.SendReminder
+          } for id ${context.processInstanceId}`,
         );
         try {
           const telegramResponseId = await TelegramBot.instance.remind();
@@ -69,9 +71,9 @@ class Camunda {
       CamundaTask.HandleTimeout,
       async (context: any) => {
         logger.info(
-          `Performing task: ${CamundaTask.HandleTimeout} for id ${
-            context.processInstanceId
-          }`,
+          `${getCurrentDate()} Performing task: ${
+            CamundaTask.HandleTimeout
+          } for id ${context.processInstanceId}`,
         );
         return {
           variables: {
@@ -85,9 +87,9 @@ class Camunda {
       CamundaTask.SaveResponse,
       async (context: any) => {
         logger.info(
-          `Performing task: ${CamundaTask.SaveResponse} for id ${
-            context.processInstanceId
-          }`,
+          `${getCurrentDate()} Performing task: ${
+            CamundaTask.SaveResponse
+          } for id ${context.processInstanceId}`,
         );
         try {
           throw new Error('Database error occured');
@@ -101,12 +103,15 @@ class Camunda {
       CamundaTask.InformUser,
       async (context: any) => {
         logger.info(
-          `Performing task: ${CamundaTask.InformUser} for id ${
-            context.processInstanceId
-          }`,
+          `${getCurrentDate()} Performing task: ${
+            CamundaTask.InformUser
+          } for id ${context.processInstanceId}`,
         );
         try {
-          await TelegramBot.instance.inform(context);
+          await TelegramBot.instance.inform(
+            context.processInstanceId,
+            context.variables.message,
+          );
           return;
         } catch (e) {
           return Camunda.generateError('TelegramError', e.message);
@@ -115,11 +120,11 @@ class Camunda {
     );
 
     this.engineWorker.subscribe(CamundaTask.LogError, async (context: any) => {
-      const { errorCode, errorMessage } = context.variables;
+      const { errorCode, message } = context.variables;
       const timestamp = dayjs().format('YYYY-MM-DDTHH:mm:ss');
-      logger.error({ timestamp, errorCode, errorMessage, context });
+      logger.error({ timestamp, errorCode, message, context });
     });
-    logger.info('Started Camunda workers...');
+    logger.info(getCurrentDate(), ' Started Camunda workers...');
   };
 }
 

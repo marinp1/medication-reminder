@@ -61,12 +61,16 @@ class TelegramBot {
     }
   }
 
-  public async inform(context: string) {
+  public async inform(processInstanceId: string, message: string) {
     try {
       await this.bot.sendMessage(
         this.VALID_USER_ID,
-        'Database error for following context:\n:```' +
-          JSON.stringify(context) +
+        'Database error occured:\n' +
+          '```Process instance ID: ' +
+          processInstanceId +
+          '\n' +
+          'Error message: ' +
+          message +
           '```',
         {
           parse_mode: 'Markdown',
