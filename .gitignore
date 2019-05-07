@@ -14,6 +14,7 @@
 .env.production
 
 *.log
+*.db
 
 yarn-error.log
 node_modules

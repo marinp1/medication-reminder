@@ -4,6 +4,7 @@ dotenv.config();
 import express from 'express';
 import { Request, Response } from 'express';
 import TelegramBot from './telegram';
+import Datastore from './db';
 import logger from './logger';
 
 const app = express();
@@ -22,5 +23,6 @@ if (require.main === module) {
 }
 
 TelegramBot.instance = new TelegramBot();
+Datastore.instance = new Datastore();
 
 export default app;

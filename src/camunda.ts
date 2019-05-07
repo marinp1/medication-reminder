@@ -4,6 +4,7 @@ import Backoff from 'camunda-worker-node/lib/backoff';
 import dayjs from 'dayjs';
 import { IMessageResponse, CamundaTask, STATUS } from './types';
 import TelegramBot from './telegram';
+import Datastore from './db';
 import logger from './logger';
 
 // Override Worker completeTask to include errorMessage
@@ -94,6 +95,7 @@ class Camunda {
           const telegramResponseId = await TelegramBot.instance.remind();
           return {
             variables: {
+              startDateTime: getCurrentDate(),
               telegramResponseId,
             },
           };
@@ -111,11 +113,20 @@ class Camunda {
             CamundaTask.HandleTimeout
           } for id ${context.processInstanceId}`,
         );
-        return {
-          variables: {
-            hello: false,
-          },
-        };
+        try {
+          const { response, startDateTime } = context.variables;
+
+          await Datastore.instance.markDone(
+            context.processInstanceId,
+            startDateTime,
+            response,
+            true,
+          );
+
+          return;
+        } catch (e) {
+          return Camunda.generateError('DatabaseError', e.message);
+        }
       },
     );
 
@@ -128,7 +139,15 @@ class Camunda {
           } for id ${context.processInstanceId}`,
         );
         try {
-          throw new Error('Database error occured');
+          const { response, startDateTime } = context.variables;
+
+          await Datastore.instance.markDone(
+            context.processInstanceId,
+            startDateTime,
+            response,
+          );
+
+          return;
         } catch (e) {
           return Camunda.generateError('DatabaseError', e.message);
         }
