@@ -13,6 +13,8 @@
 .env.development
 .env.production
 
+releases/
+
 *.log
 *.db
 
