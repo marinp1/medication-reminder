@@ -1,5 +1,4 @@
 const path = require('path');
-const nodeExternals = require('webpack-node-externals');
 const WebpackShellPlugin = require('webpack-shell-plugin');
 
 module.exports = {
@@ -27,5 +26,4 @@ module.exports = {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist')
   },
-  externals: [nodeExternals()],
 };
