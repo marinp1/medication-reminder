@@ -1,6 +1,6 @@
 {
   "name": "medication-reminder",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Just a bot to tell me to take my meds",
   "main": "index.js",
   "author": "Patrik Marin",
