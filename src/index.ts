@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
+
 import express from 'express';
 import request from 'request';
 import path from 'path';
@@ -13,6 +14,8 @@ import logger from './logger';
 
 const app = express();
 const camundaEndpoint = Camunda.engineEndpoint;
+
+const ROOT_PATH = path.dirname((process.mainModule as NodeModule).filename);
 
 const { PORT = 3000, AUTH_TOKEN } = process.env;
 if (!AUTH_TOKEN) {
@@ -48,7 +51,8 @@ app.post('/deploy', async (req: Request, res: Response) => {
       console.log(`Deleted deployment ${id}`);
     }
 
-    const diagramPath = path.resolve(require.resolve('../diagram.bpmn'));
+    require('../diagram.bpmn');
+    const diagramPath = `${ROOT_PATH}/diagram.bpmn`;
 
     const requestOptions = {
       method: 'POST',

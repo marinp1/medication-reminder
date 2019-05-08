@@ -8,7 +8,10 @@ module.exports = {
   module: {
     rules: [{
         test: /\.bpmn$/,
-        use: 'raw-loader'
+        loader: 'file-loader',
+        options: {
+          name: '[path][name].[ext]',
+        },
       },
       {
         test: /\.tsx?$/,

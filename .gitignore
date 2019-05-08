@@ -14,9 +14,11 @@
 .env.production
 
 releases/
+scripts/CURRENT-RELEASE
 
 *.log
 *.db
+*.pid
 
 yarn-error.log
 node_modules
