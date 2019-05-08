@@ -17,6 +17,8 @@ echo "Killing current process"
 PID=$(cat process.pid)
 kill $PID
 
+sleep 5
+
 if ps -p $PID > /dev/null
 then
   echo "$PID is running even though it should have failed... exiting"
