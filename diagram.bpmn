@@ -160,14 +160,14 @@ execution.setVariable("expired", true);</bpmn:script>
       <bpmndi:BPMNShape id="ExclusiveGateway_1oktg90_di" bpmnElement="ExclusiveGateway_1oktg90" isMarkerVisible="true">
         <dc:Bounds x="505" y="210" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="493" y="268" width="74" height="13" />
+          <dc:Bounds x="493" y="260" width="74" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_05hr119_di" bpmnElement="SequenceFlow_05hr119">
         <di:waypoint x="530" y="210" />
         <di:waypoint x="530" y="115" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="547" y="167" width="35" height="12" />
+          <dc:Bounds x="538" y="164" width="35" height="12" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DataStoreReference_0tx3x3b_di" bpmnElement="DataStoreReference_0tx3x3b">
