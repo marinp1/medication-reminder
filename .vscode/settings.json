@@ -1,3 +1,5 @@
 {
   "editor.formatOnSave": true,
+  "prettier.tslintIntegration": true,
+  "files.insertFinalNewline": true,
 }
