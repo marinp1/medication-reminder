@@ -19,13 +19,14 @@ This is overly complex way to do this, but the process is two-fold: Camunda hand
 
 ### Process
 1. Twice a day (7.30 & 19.30) the process starts.
-2. Telegram bot send me an message with the following content:
-![Telegram reminder](./resources/telegram-message.png?raw=true "Telegram reminder")
+2. Telegram bot sends me an message asking if I've taken my medication. 
 3. If nothing is done, after 8 hours the process is saved as **NO** to the database (medication skipped) and the process quits.
 4. If **YES / NO** are pressed, the response is saved to database and the process quits.
 5. If **WAIT** is pressed, the process waits 30 minutes before reminding again. If during this time either **YES** or **NO** are pressed again, the response is saved and the process quits.
 
-If exceptions occur, those are gracefully handled and logged to app logs. 
+If exceptions occur, those are gracefully handled and logged to app logs.
+
+![Telegram reminder](./resources/telegram-message.png?raw=true "Telegram reminder")
 
 ## Deployment
 Both Camunda and Telegram bot run locally on my Raspberry Pi.
