@@ -49,10 +49,11 @@ class Camunda {
   public static readonly engineEndpoint = 'http://localhost:8080/engine-rest';
 
   public static generateMessage = (
+    messageName: 'reminder-response-message' | 'wait-response-message',
     telegramResponseId: string,
     responseStatus: STATUS,
   ): IMessageResponse => ({
-    messageName: 'reminder-response-message',
+    messageName,
     resultEnabled: true,
     correlationKeys: {
       telegramResponseId: {
@@ -107,45 +108,23 @@ class Camunda {
     );
 
     this.engineWorker.subscribe(
-      CamundaTask.HandleTimeout,
-      async (context: any) => {
-        logger.info(
-          `${getCurrentDate()} Performing task: ${
-            CamundaTask.HandleTimeout
-          } for id ${context.processInstanceId}`,
-        );
-        try {
-          const { response, startDateTime } = context.variables;
-
-          await Datastore.instance.markDone(
-            context.processInstanceId,
-            startDateTime,
-            response,
-            true,
-          );
-
-          return;
-        } catch (e) {
-          return Camunda.generateError('DatabaseError', e.message);
-        }
-      },
-    );
-
-    this.engineWorker.subscribe(
       CamundaTask.SaveResponse,
       async (context: any) => {
         logger.info(
           `${getCurrentDate()} Performing task: ${
             CamundaTask.SaveResponse
-          } for id ${context.processInstanceId}`,
+          } for id ${context.processInstanceId} with variables ${JSON.stringify(
+            context.variables,
+          )}`,
         );
         try {
-          const { response, startDateTime } = context.variables;
+          const { response, startDateTime, expired } = context.variables;
 
           await Datastore.instance.markDone(
             context.processInstanceId,
             startDateTime,
             response,
+            expired ? expired : false,
           );
 
           return;

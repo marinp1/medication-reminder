@@ -3,14 +3,13 @@ export type STATUS = 'YES' | 'NO' | 'WAIT';
 export enum CamundaTask {
   SendReminder = 'send-reminder',
   ReceiveResponse = 'receive-response',
-  HandleTimeout = 'handle-timeout',
   SaveResponse = 'save-response',
   InformUser = 'inform-user',
   LogError = 'log-error',
 }
 
 export interface IMessageResponse {
-  messageName: 'reminder-response-message';
+  messageName: 'reminder-response-message' | 'wait-response-message';
   correlationKeys: {
     telegramResponseId: {
       value: string;

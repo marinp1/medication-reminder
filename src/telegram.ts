@@ -29,7 +29,7 @@ class TelegramBot {
       const id = uuidv4();
       await this.bot.sendMessage(
         this.VALID_USER_ID,
-        '*Reminder: Have you taken meds?*',
+        '*Reminder: Have you taken your medication?*',
         {
           parse_mode: 'Markdown',
           reply_markup: {
@@ -108,6 +108,38 @@ class TelegramBot {
           throw new Error('Invalid answer');
         }
         await this.respond(id, response);
+
+        // FIXME: Remove inline keyboard after answer
+        /*
+        const newInlineKeyboard =
+          response === 'WAIT'
+            ? [
+                [
+                  {
+                    text: 'Yes',
+                    callback_data: JSON.stringify({ id, response: 'YES' }),
+                  },
+                  {
+                    text: 'No',
+                    callback_data: JSON.stringify({ id, response: 'NO' }),
+                  },
+                ],
+              ]
+            : [[]];
+        */
+
+        /*
+        this.bot.editMessageText(
+          (query.message as TelegramService.Message).text as string,
+          {
+            message_id: (query.message as TelegramService.Message).message_id,
+            reply_markup: {
+              inline_keyboard: newInlineKeyboard,
+            },
+          },
+        );
+        */
+
         switch (response as STATUS) {
           case 'YES':
             this.bot.sendMessage(this.VALID_USER_ID, `Alright, noted.`);
@@ -132,9 +164,14 @@ class TelegramBot {
         });
       } catch (e) {
         if (e.message.startsWith('400:')) {
-          this.bot.answerCallbackQuery(query.id, {
-            text: 'Task has expired or you have responsed to it already.',
-          });
+          const { id, response } = JSON.parse(query.data as string);
+          if (response === 'YES' || response === 'NO') {
+            this.markAsDone(id, response, query.id);
+          } else {
+            this.bot.answerCallbackQuery(query.id, {
+              text: 'Task has expired or you have responsed to it already.',
+            });
+          }
         } else {
           this.bot.sendMessage(this.VALID_USER_ID, e.message);
           console.error(e);
@@ -146,6 +183,37 @@ class TelegramBot {
     this.Camunda.init();
   }
 
+  private async markAsDone(id: string, result: STATUS, queryId: string) {
+    try {
+      if (!id) {
+        throw new Error('Invalid response ID');
+      }
+
+      const endpoint = CamundaService.engineEndpoint + '/message';
+      const response = await axios.post(
+        endpoint,
+        CamundaService.generateMessage('wait-response-message', id, result),
+      );
+
+      if (response.status !== 200 || !response.data || !response.data.length) {
+        throw new Error('Could not reach Camunda!');
+      }
+
+      this.bot.sendMessage(
+        this.VALID_USER_ID,
+        `Marked reminder from status waiting to ${result}.`,
+      );
+
+      this.bot.answerCallbackQuery(queryId, {
+        text: 'Response saved',
+      });
+    } catch (e) {
+      this.bot.answerCallbackQuery(queryId, {
+        text: 'Task has expired or you have responsed to it already.',
+      });
+    }
+  }
+
   private async respond(id: string, result: STATUS) {
     try {
       if (!id) {
@@ -155,7 +223,7 @@ class TelegramBot {
       const endpoint = CamundaService.engineEndpoint + '/message';
       const response = await axios.post(
         endpoint,
-        CamundaService.generateMessage(id, result),
+        CamundaService.generateMessage('reminder-response-message', id, result),
       );
 
       if (response.status !== 200 || !response.data || !response.data.length) {
