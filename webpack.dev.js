@@ -1,6 +1,5 @@
 const merge = require('webpack-merge');
 const common = require('./webpack.common.js');
-const nodeExternals = require('webpack-node-externals');
 const WebpackShellPlugin = require('webpack-shell-plugin');
 
 module.exports = merge(common, {
@@ -12,5 +11,4 @@ module.exports = merge(common, {
       onBuildEnd: ['yarn run:dev']
     })
   ],
-  externals: [nodeExternals()],
 });
