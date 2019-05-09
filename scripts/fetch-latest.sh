@@ -37,6 +37,11 @@ set -a
 . ./.env
 set +a
 
+echo "Install node modules"
+cd dist/
+npm install --only=prod
+cd ..
+
 echo "Starting new process"
 node dist/bundle.js &
 echo $! >process.pid
