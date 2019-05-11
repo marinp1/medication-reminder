@@ -6,7 +6,7 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import logger from './logger';
 
-import { STATUS } from './types';
+import { STATUS, IApplicationUpdate } from './types';
 
 class TelegramBot {
   public static instance: TelegramBot;
@@ -80,6 +80,39 @@ class TelegramBot {
         },
       );
     } catch (e) {
+      throw e;
+    }
+  }
+
+  public startUpdateRequest(chatId: string) {
+    try {
+      // TODO: CHECK LATEST VERSION, COMPARE TO CURRENT VERSION
+      // IF NO NEW RELEASE, SEND INFORMATION
+      // ELSE START UPDATE SCRIPT AND REQUEST
+      return this.bot.sendMessage(chatId, 'Starting update request...');
+    } catch (e) {
+      logger.error(e.message);
+      throw e;
+    }
+  }
+
+  public sendReleaseInformation(data: IApplicationUpdate) {
+    try {
+      return this.bot.sendMessage(
+        this.VALID_USER_ID,
+        `Application updated successfully to *${data.newVerson}*\n` +
+          '```\n' +
+          `Old version:\t${data.oldVersion}\n` +
+          `Update time:\t${data.date}\n` +
+          `Release notes:\t${data.updateNotes}\n` +
+          `BPMN updated:\t${data.diagramUpdate}\n` +
+          '```',
+        {
+          parse_mode: 'Markdown',
+        },
+      );
+    } catch (e) {
+      logger.error(e.message);
       throw e;
     }
   }

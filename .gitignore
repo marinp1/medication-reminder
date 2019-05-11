@@ -15,10 +15,13 @@
 
 releases/
 scripts/CURRENT-RELEASE
+scripts/DIAGRAM-HASH
 
 *.log
 *.db
 *.pid
+
+*.sha256
 
 yarn-error.log
 node_modules

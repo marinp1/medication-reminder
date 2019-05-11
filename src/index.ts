@@ -97,6 +97,27 @@ app.post('/deploy', async (req: Request, res: Response) => {
   }
 });
 
+app.post('/update-notes', (req, res) => {
+  if (req.headers.authorization !== AUTH_TOKEN) {
+    return res.sendStatus(403);
+  }
+  try {
+    TelegramBot.instance.sendReleaseInformation({
+      newVerson: '1.1.0',
+      oldVersion: '1.2.0',
+      date: 'asd',
+      diagramUpdate: false,
+      updateNotes: 'Hello',
+    });
+    return res.sendStatus(200);
+  } catch (e) {
+    return res.status(500).send({
+      status: 500,
+      message: e.message,
+    });
+  }
+});
+
 if (require.main === module) {
   // true if file is executed
   app.listen(PORT, () => {

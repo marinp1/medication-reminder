@@ -48,12 +48,26 @@ echo $! >process.pid
 
 rm $RELEASE_NAME.tar.gz
 
+# Update RELEASE information
+echo -n $RELEASE_NAME > CURRENT-RELEASE
+
+CURRENT_DIAGRAM_HASH=$(cat CURRENT-DIAGRAM)
+NEW_DIAGRAM_HASH=$(cat dist/diagram.bpmn.sha256)
+
+if [ $CURRENT_DIAGRAM_HASH == $NEW_DIAGRAM_HASH ];
+then
+  exit 0
+fi
+
 sleep 5
 
-echo "Deploy BPMN diagram"
+echo "Deploy new BPMN diagram..."
 DEPLOY_RESULT=`curl --silent -X POST \
   http://localhost:3000/deploy \
   -H "Authorization: $AUTH_TOKEN"`
 echo $DEPLOY_RESULT
+
+# Update DIAGRAM HASH information
+echo -n $NEW_DIAGRAM_HASH > CURRENT-DIAGRAM
 
 # TODO Send update message to API

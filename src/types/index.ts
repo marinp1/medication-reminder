@@ -32,3 +32,11 @@ export interface IReminderDocument {
   status: 'YES' | 'NO';
   expired: boolean;
 }
+
+export interface IApplicationUpdate {
+  date: string;
+  oldVersion: string;
+  newVerson: string;
+  updateNotes: string;
+  diagramUpdate: boolean;
+}
