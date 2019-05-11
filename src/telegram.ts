@@ -94,12 +94,18 @@ class TelegramBot {
       const chatId = String(msg.chat.id);
       if (chatId !== this.VALID_USER_ID || !msg.from) {
         return this.unauthorised(chatId);
-      } else {
-        return this.bot.sendMessage(
-          chatId,
-          `Hello ${msg.from && msg.from.first_name} (${msg.from.id})`,
-        );
       }
+      return this.bot.sendMessage(
+        chatId,
+        `Hello ${msg.from && msg.from.first_name} (${msg.from.id})`,
+      );
+    });
+    this.bot.onText(/^\/status$/, (msg, match) => {
+      const chatId = String(msg.chat.id);
+      if (chatId !== this.VALID_USER_ID || !msg.from) {
+        return this.unauthorised(chatId);
+      }
+      return this.bot.sendMessage(chatId, 'Not implemented');
     });
     this.bot.on('callback_query', async query => {
       try {

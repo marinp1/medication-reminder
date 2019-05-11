@@ -24,3 +24,11 @@ export interface IMessageResponse {
     };
   };
 }
+
+export interface IReminderDocument {
+  id: string;
+  startDateTime: Date;
+  endDateTime: Date;
+  status: 'YES' | 'NO';
+  expired: boolean;
+}

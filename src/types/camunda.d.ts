@@ -1,9 +1,9 @@
 declare module 'camunda-worker-node/lib/backoff' {
   export class IBackoff {
-    maxPollingInterval: number;
-    minPollingInterval: number;
-    maxActiveTasks: number;
-    stepping: number;
+    public maxPollingInterval: number;
+    public minPollingInterval: number;
+    public maxActiveTasks: number;
+    public stepping: number;
   }
 
   function Backoff(
@@ -21,7 +21,7 @@ declare module 'camunda-worker-node/lib/backoff' {
 
 declare module 'camunda-worker-node/lib/engine/api' {
   export class IEngineAPI {
-    bpmnError: (
+    public bpmnError: (
       taskId: string,
       body: {
         workerId: string;
@@ -29,7 +29,7 @@ declare module 'camunda-worker-node/lib/engine/api' {
         errorMessage: string;
       },
     ) => void;
-    taskFailed: (
+    public taskFailed: (
       taskId: string,
       body: {
         workerId: string;
@@ -56,20 +56,19 @@ declare module 'camunda-worker-node/lib/worker' {
     STATE_STOPPED = 'STOPPED',
   }
 
-  export interface IWorkSubscription {}
   export interface ITask {
     id: string;
     [key: string]: any;
   }
 
   export class IWorker {
-    subscriptions: IWorkSubscription[];
-    state: STATE;
-    engineApi: IEngineAPI;
-    start: () => any;
-    addSubscription: (data: { topicName: string }) => IWorkSubscription;
-    removeSubscription: (subscription: IWorkSubscription) => any;
-    error: (
+    public subscriptions: any[];
+    public state: STATE;
+    public engineApi: IEngineAPI;
+    public start: () => any;
+    public addSubscription: (data: { topicName: string }) => any;
+    public removeSubscription: (subscription: any) => any;
+    public error: (
       msg: string,
       err: {
         workerId: string;
@@ -77,23 +76,26 @@ declare module 'camunda-worker-node/lib/worker' {
         errorMessage: string;
       },
     ) => void;
-    subscribe: (
+    public subscribe: (
       topicName: string,
       options: { [key: string]: any },
       fn?: any,
-    ) => IWorkSubscription;
-    registerWorker: (a: any, b: any, c: any) => IWorkSubscription;
-    poll: () => any;
-    fetchTasks: (topics: any[]) => any[];
-    executeTasks: (tasks: ITask[]) => any;
-    executeTask: (task: ITask) => any;
-    createTaskContext: (task: ITask) => any;
-    completeTask: (task: ITask, newContext?: { [key: string]: any }) => any;
-    configure: (newOptions: { [key: string]: any }) => void;
-    stop: () => void;
-    shutdown: () => void;
-    extendLock: (task: ITask, newDuration: number) => void;
-    reschedule: (waitMs: number) => void;
+    ) => any;
+    public registerWorker: (a: any, b: any, c: any) => any;
+    public poll: () => any;
+    public fetchTasks: (topics: any[]) => any[];
+    public executeTasks: (tasks: ITask[]) => any;
+    public executeTask: (task: ITask) => any;
+    public createTaskContext: (task: ITask) => any;
+    public completeTask: (
+      task: ITask,
+      newContext?: { [key: string]: any },
+    ) => any;
+    public configure: (newOptions: { [key: string]: any }) => void;
+    public stop: () => void;
+    public shutdown: () => void;
+    public extendLock: (task: ITask, newDuration: number) => void;
+    public reschedule: (waitMs: number) => void;
   }
 }
 
