@@ -1,5 +1,7 @@
 import TelegramService from 'node-telegram-bot-api';
+import dayjs from 'dayjs';
 import CamundaService from './camunda';
+import Database from './db';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import logger from './logger';
@@ -100,51 +102,38 @@ class TelegramBot {
         `Hello ${msg.from && msg.from.first_name} (${msg.from.id})`,
       );
     });
-    this.bot.onText(/^\/status$/, (msg, match) => {
+
+    this.bot.onText(/^\/status$/, async (msg, match) => {
       const chatId = String(msg.chat.id);
       if (chatId !== this.VALID_USER_ID || !msg.from) {
         return this.unauthorised(chatId);
       }
-      return this.bot.sendMessage(chatId, 'Not implemented');
+      try {
+        const document = await Database.instance.getLatestSuccess();
+        const minuteDifference = dayjs().diff(
+          dayjs(document.endDateTime),
+          'minute',
+          true,
+        );
+        const hours = Math.floor(minuteDifference / 60);
+        const minutes = Math.floor(minuteDifference - hours * 60);
+        return this.bot.sendMessage(
+          chatId,
+          `Last medicine taken ${hours} hours ${minutes} minutes ago.`,
+        );
+      } catch (e) {
+        return this.bot.sendMessage(chatId, e.message);
+      }
     });
+
     this.bot.on('callback_query', async query => {
       try {
         const { id, response } = JSON.parse(query.data as string);
         if (!id || !response) {
           throw new Error('Invalid answer');
         }
+
         await this.respond(id, response);
-
-        // FIXME: Remove inline keyboard after answer
-        /*
-        const newInlineKeyboard =
-          response === 'WAIT'
-            ? [
-                [
-                  {
-                    text: 'Yes',
-                    callback_data: JSON.stringify({ id, response: 'YES' }),
-                  },
-                  {
-                    text: 'No',
-                    callback_data: JSON.stringify({ id, response: 'NO' }),
-                  },
-                ],
-              ]
-            : [[]];
-        */
-
-        /*
-        this.bot.editMessageText(
-          (query.message as TelegramService.Message).text as string,
-          {
-            message_id: (query.message as TelegramService.Message).message_id,
-            reply_markup: {
-              inline_keyboard: newInlineKeyboard,
-            },
-          },
-        );
-        */
 
         switch (response as STATUS) {
           case 'YES':

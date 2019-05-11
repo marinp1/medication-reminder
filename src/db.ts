@@ -57,6 +57,11 @@ class Database {
           if (err) {
             return reject(new Error(err.message));
           }
+          if (docs.length === 0) {
+            return reject(
+              new Error('No records in the database for taken medicines.'),
+            );
+          }
           return resolve(docs[0]);
         });
     });
@@ -79,6 +84,18 @@ class Database {
         }
         return resolve(count);
       });
+    });
+
+  public getSkippedCount = (): Promise<number> =>
+    new Promise((resolve, reject) => {
+      return this.datastore
+        .count({ status: 'NO' })
+        .exec((err, count: number) => {
+          if (err) {
+            return reject(new Error(err.message));
+          }
+          return resolve(count);
+        });
     });
 }
 
