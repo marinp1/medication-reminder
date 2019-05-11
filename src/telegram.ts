@@ -115,8 +115,19 @@ class TelegramBot {
           'minute',
           true,
         );
+
         const hours = Math.floor(minuteDifference / 60);
         const minutes = Math.floor(minuteDifference - hours * 60);
+        const days = Math.floor(minuteDifference / 60 / 24);
+
+        if (days > 0) {
+          return this.bot.sendMessage(
+            chatId,
+            `Last medicine taken ${days} days ${hours -
+              24 * days} hours ${minutes} minutes ago.`,
+          );
+        }
+
         return this.bot.sendMessage(
           chatId,
           `Last medicine taken ${hours} hours ${minutes} minutes ago.`,

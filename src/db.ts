@@ -10,12 +10,13 @@ class Database {
 
   constructor() {
     this.datastore =
-      process.env.NODE_ENV === 'production'
+      process.env.NODE_ENV === 'production' ||
+      process.env.NODE_ENV === 'development'
         ? new nedb({
             filename: 'datastore.db',
             autoload: true,
           })
-        : new nedb();
+        : new nedb({ inMemoryOnly: true });
     return this;
   }
 

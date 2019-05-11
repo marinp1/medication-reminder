@@ -15,9 +15,8 @@
     "pack-tar": "tar -cvzf $npm_package_name-$npm_package_version.tar.gz ./dist && mv $npm_package_name-$npm_package_version.tar.gz releases",
     "pack-zip": "zip -vr $npm_package_name-$npm_package_version.zip ./dist/ && mv $npm_package_name-$npm_package_version.zip releases",
     "pack": "yarn run copy-package-json && yarn run pack-tar && yarn run pack-zip",
-    "postpack": "npm version patch",
     "pretest": "npm run lint",
-    "test": "jest"
+    "test": "NODE_ENV=test jest"
   },
   "devDependencies": {
     "@types/dotenv": "^6.1.0",
