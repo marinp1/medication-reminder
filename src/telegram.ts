@@ -100,7 +100,7 @@ class TelegramBot {
     try {
       return this.bot.sendMessage(
         this.VALID_USER_ID,
-        `Application updated successfully to *${data.newVerson}*\n` +
+        `Application updated successfully to *${data.newVersion}*\n` +
           '```\n' +
           `Old version:\t${data.oldVersion}\n` +
           `Update time:\t${data.date}\n` +

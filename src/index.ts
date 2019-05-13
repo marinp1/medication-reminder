@@ -6,11 +6,14 @@ import request from 'request';
 import path from 'path';
 import fs from 'fs';
 import { Request, Response } from 'express';
+import bodyParser from 'body-parser';
 import axios from 'axios';
 import TelegramBot from './telegram';
 import Datastore from './db';
 import Camunda from './camunda';
 import logger from './logger';
+import { IApplicationUpdate } from './types';
+import { validateApplicationUpdateRequest } from './validator';
 
 const app = express();
 const camundaEndpoint = Camunda.engineEndpoint;
@@ -21,6 +24,8 @@ const { PORT = 3000, AUTH_TOKEN } = process.env;
 if (!AUTH_TOKEN) {
   throw new Error('Auth token not set!');
 }
+
+app.use(bodyParser.json());
 
 app.get('/health-check', (req: Request, res: Response) => {
   res.sendStatus(200);
@@ -97,18 +102,17 @@ app.post('/deploy', async (req: Request, res: Response) => {
   }
 });
 
-app.post('/update-notes', (req, res) => {
+app.post('/update-notes', async (req, res) => {
   if (req.headers.authorization !== AUTH_TOKEN) {
     return res.sendStatus(403);
   }
   try {
-    TelegramBot.instance.sendReleaseInformation({
-      newVerson: '1.1.0',
-      oldVersion: '1.2.0',
-      date: 'asd',
-      diagramUpdate: false,
-      updateNotes: 'Hello',
-    });
+    const updateRequest = req.body as IApplicationUpdate;
+    const errors = validateApplicationUpdateRequest(req.body);
+    if (errors.length > 0) {
+      throw new Error(JSON.stringify(errors));
+    }
+    await TelegramBot.instance.sendReleaseInformation(updateRequest);
     return res.sendStatus(200);
   } catch (e) {
     return res.status(500).send({

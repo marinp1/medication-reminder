@@ -36,7 +36,7 @@ export interface IReminderDocument {
 export interface IApplicationUpdate {
   date: string;
   oldVersion: string;
-  newVerson: string;
+  newVersion: string;
   updateNotes: string;
   diagramUpdate: boolean;
 }

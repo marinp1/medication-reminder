@@ -1,5 +1,4 @@
 # package directories
-/*/node_modules
 /*/jspm_packages
 
 # Serverless directories
@@ -35,3 +34,5 @@ local/
 .DS_Store
 src/index.js
 src/index.js.map
+
+!src/node_modules

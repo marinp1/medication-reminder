@@ -49,6 +49,8 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "better-validator": "^2.1.8",
+    "body-parser": "^1.19.0",
     "camunda-worker-node": "^7.1.0",
     "dayjs": "^1.8.9",
     "dotenv": "^7.0.0",
