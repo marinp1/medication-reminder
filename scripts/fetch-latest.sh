@@ -1,7 +1,9 @@
 #!/bin/bash
 REPO_URL="marinp1/medication-reminder"
 LATEST_RELEASE=`curl --silent "https://api.github.com/repos/$REPO_URL/releases/latest"`
-RELEASE_NAME=`jq -r '.name' <<< $LATEST_RELEASE`
+RELEASE_NAME=`jq -r '.tag_name' <<< $LATEST_RELEASE`
+UPDATE_NOTES=`jq -r '.body' <<< $LATEST_RELEASE`
+CREATION_DATE=`jq -r '.created_at' <<< $LATEST_RELEASE`
 CURRENT_RELEASE=$(cat CURRENT-RELEASE)
 
 if [ $CURRENT_RELEASE == $RELEASE_NAME ];
@@ -54,20 +56,32 @@ echo -n $RELEASE_NAME > CURRENT-RELEASE
 CURRENT_DIAGRAM_HASH=$(cat CURRENT-DIAGRAM)
 NEW_DIAGRAM_HASH=$(cat dist/diagram.bpmn.sha256)
 
-if [ $CURRENT_DIAGRAM_HASH == $NEW_DIAGRAM_HASH ];
+DIAGRAM_UPDATE=false
+
+if [ $CURRENT_DIAGRAM_HASH != $NEW_DIAGRAM_HASH ];
 then
-  exit 0
+  sleep 5
+
+  echo "Deploy new BPMN diagram..."
+  DEPLOY_RESULT=`curl --silent -X POST \
+    http://localhost:3000/deploy \
+    -H "Authorization: $AUTH_TOKEN"`
+  echo $DEPLOY_RESULT
+
+  # Update DIAGRAM HASH information
+  echo -n $NEW_DIAGRAM_HASH > CURRENT-DIAGRAM
+  DIAGRAM_UPDATE=true
 fi
 
-sleep 5
-
-echo "Deploy new BPMN diagram..."
-DEPLOY_RESULT=`curl --silent -X POST \
-  http://localhost:3000/deploy \
-  -H "Authorization: $AUTH_TOKEN"`
-echo $DEPLOY_RESULT
-
-# Update DIAGRAM HASH information
-echo -n $NEW_DIAGRAM_HASH > CURRENT-DIAGRAM
-
-# TODO Send update message to API
+# Send update message to API
+curl --silent -X POST \
+  http://localhost:3000/update-notes \
+  -H "Authorization: $AUTH_TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{
+	"date": "$CREATION_DATE",
+	"oldVersion": "${CURRENT_RELEASE:1}",
+	"newVersion": "${RELEASE_NAME:1}",
+	"updateNotes": "$UPDATE_NOTES",
+	"diagramUpdate": $DIAGRAM_UPDATE
+}'
